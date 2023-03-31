@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { connect } from "react-redux";
-import { addTodos } from "../redux/reducer";
+import { addTodos, removeTodos, updateTodos } from "../redux/reducer";
 
 const mapStateToProps = (state) => {
   return {
@@ -11,11 +11,19 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     addTodo: (obj) => dispatch(addTodos(obj)),
+    removeTodo: (id) => dispatch(removeTodos(id)),
   };
 };
 
 const Todos = (props) => {
   const [todo, setTodo] = useState("");
+
+  const inputRef = useRef(true);
+
+  const changeFocus=()=>{
+    inputRef.current.disabled=false;
+    inputRef.current.focus();
+  }
 
   const handleChange = (e) => {
     setTodo(e.target.value);
@@ -45,7 +53,19 @@ const Todos = (props) => {
       <br />
       <ul>
         {props.todos.map((item) => {
-          return <li key={item.id}>{item.item}</li>;
+          return (
+            <li key={item.id}>
+              <textarea
+                ref={inputRef}
+                disabled={inputRef}
+                defaultValue={item.item}
+              />
+              <button onClick={()=>changeFocus()}>Edit</button>
+              <button onClick={() => props.removeTodo(item.id)}>
+                Delete
+              </button>{" "}
+            </li>
+          );
         })}
       </ul>
     </div>
